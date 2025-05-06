@@ -107,8 +107,6 @@ const ViewUser = () => {
   // Decode the token and get the current user's ID for comparison
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
   const decodedToken: DecodedToken = jwtDecode(token || '');
-  const currentUserId = decodedToken?.id;
-  const shouldHideLogoutButton = decodedToken?.role === 'admin' && id !== currentUserId;
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 px-6 py-10">
@@ -169,7 +167,7 @@ const ViewUser = () => {
         )}
 
         {/* Logout button */}
-        {!shouldHideLogoutButton && (
+        {decodedToken?.role !== 'admin' && (
           <div className="flex justify-end mt-4">
             <button
               onClick={handleLogout}
