@@ -1,7 +1,15 @@
 import { useState, FormEvent } from 'react';
 import axios from 'axios';
+import { AxiosError } from 'axios'; // Import AxiosError
 import { useRouter } from 'next/router';
 import { jwtDecode } from 'jwt-decode';
+import Link from 'next/link';
+
+interface DecodedToken {
+  role: string;
+  id: string;
+  // Add more fields if necessary
+}
 
 const Login = () => {
   const [email, setEmail] = useState<string>('');
@@ -19,7 +27,7 @@ const Login = () => {
       localStorage.setItem('token', token);
 
       // Decode token to get user info (role and id)
-      const decoded: { role: string; id: string } = jwtDecode(token);
+      const decoded: DecodedToken = jwtDecode(token);
 
       // Redirect based on role
       if (decoded.role === 'admin') {
@@ -27,12 +35,10 @@ const Login = () => {
       } else {
         router.push(`/users/${decoded.id}`); // Regular user goes to their profile
       }
-    } catch (err: any) {
-      if (err.response) {
-        // If the error has a response from the server, set that message
-        setError(err.response.data.message || 'Something went wrong. Please try again.');
+    } catch (err: unknown) {
+      if (err instanceof AxiosError) {
+        setError(err.response?.data.message || 'Something went wrong. Please try again.');
       } else {
-        // If no response from the server, display a generic error
         setError('Network error. Please try again later.');
       }
     }
@@ -71,9 +77,9 @@ const Login = () => {
         </form>
         <p className="text-center mt-4 text-gray-700 dark:text-gray-300">
           Don&apos;t have an account?{' '}
-          <a href="/auth/register" className="text-indigo-600 hover:text-indigo-700">
+          <Link href="/auth/register" className="text-indigo-600 hover:text-indigo-700">
             Register here
-          </a>
+          </Link>
         </p>
       </div>
     </div>

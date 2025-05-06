@@ -1,4 +1,5 @@
 import { jwtDecode } from 'jwt-decode';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
@@ -148,11 +149,14 @@ const Dashboard = () => {
                 {users.length > 0 ? users.map(user => (
                   <tr key={user._id} className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
                     <td className="px-6 py-4">
-                      <img
+                    <div className="relative w-12 h-12">
+                      <Image
                         src={user.profilePhoto || '/default-avatar.jpg'}
                         alt={user.name}
-                        className="w-12 h-12 rounded-full object-cover"
+                        fill
+                        className="rounded-full object-cover"
                       />
+                    </div>
                     </td>
                     <td className="px-6 py-4 font-medium">{user.name}</td>
                     <td className="px-6 py-4">{user.email}</td>

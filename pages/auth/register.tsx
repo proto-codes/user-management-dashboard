@@ -1,13 +1,25 @@
 import { useState, FormEvent } from 'react';
 import axios from 'axios';
+import { AxiosError } from 'axios'; // Import AxiosError
 import { useRouter } from 'next/router';
+import Link from 'next/link';
+
+enum Role {
+  Admin = 'Admin',
+  User = 'User',
+}
+
+enum Status {
+  Active = 'Active',
+  Inactive = 'Inactive',
+}
 
 const Register = () => {
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const [role, setRole] = useState<'Admin' | 'User'>('User');
-  const [status, setStatus] = useState<'Active' | 'Inactive'>('Active');
+  const [role, setRole] = useState<Role>(Role.User);
+  const [status, setStatus] = useState<Status>(Status.Active);
   const [error, setError] = useState<string>('');
   const router = useRouter();
 
@@ -20,16 +32,14 @@ const Register = () => {
         email,
         password,
         role,
-        status
+        status,
       });
 
       router.push('/auth/login');
-    } catch (err: any) {
-      if (err.response) {
-        // If the error has a response from the server, set that message
-        setError(err.response.data.message || 'Something went wrong. Please try again.');
+    } catch (err: unknown) {
+      if (err instanceof AxiosError) {
+        setError(err.response?.data.message || 'Something went wrong. Please try again.');
       } else {
-        // If no response from the server, display a generic error
         setError('Network error. Please try again later.');
       }
     }
@@ -71,7 +81,7 @@ const Register = () => {
           <div className="mb-4">
             <select
               value={role}
-              onChange={(e) => setRole(e.target.value as 'Admin' | 'User')}
+              onChange={(e) => setRole(e.target.value as Role)}
               className="w-full p-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
               <option value="User">User</option>
@@ -81,7 +91,7 @@ const Register = () => {
           <div className="mb-6">
             <select
               value={status}
-              onChange={(e) => setStatus(e.target.value as 'Active' | 'Inactive')}
+              onChange={(e) => setStatus(e.target.value as Status)}
               className="w-full p-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
               <option value="Active">Active</option>
@@ -97,9 +107,9 @@ const Register = () => {
         </form>
         <p className="text-center mt-4 text-gray-700 dark:text-gray-300">
           Already have an account?{' '}
-          <a href="/auth/login" className="text-indigo-600 hover:text-indigo-700">
+          <Link href="/auth/login" className="text-indigo-600 hover:text-indigo-700">
             Login here
-          </a>
+          </Link>
         </p>
       </div>
     </div>

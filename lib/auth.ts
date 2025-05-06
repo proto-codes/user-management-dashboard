@@ -2,7 +2,13 @@ import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
-export function signToken(payload: any) {
+interface TokenPayload {
+  id: string;
+  role: 'admin' | 'user';
+  // Add any other properties needed for the token payload
+}
+
+export function signToken(payload: TokenPayload) {
   return jwt.sign(payload, JWT_SECRET, { expiresIn: '1d' });
 }
 
